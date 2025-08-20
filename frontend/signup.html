@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WellnessHub — Signup</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width:400px; margin:40px auto; padding:16px; }
+    input, button { display:block; width:100%; padding:10px; margin:8px 0; }
+    #message { color:#b33; margin-top:12px; white-space:pre-wrap; }
+    #success { color:green; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <h2>Create Your WellnessHub Account</h2>
+  <form id="signupForm">
+    <input type="text" id="name" placeholder="Full Name" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <input type="text" id="address" placeholder="Address" required />
+    <button type="submit">Sign Up</button>
+  </form>
+
+  <p id="message"></p>
+  <p id="success"></p>
+  <p>Already have an account? <a href="login.html">Login here</a></p>
+
+  <script>
+  document.getElementById("signupForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const address = document.getElementById("address").value;
+
+    const res = await fetch("http://localhost:5000/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, address })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById("message").innerText = data.error;
+      document.getElementById("success").innerText = "";
+    } else {
+      document.getElementById("success").innerText = "✅ Account created successfully! Redirecting...";
+      document.getElementById("message").innerText = "";
+
+      // ⚡ Auto-login after signup: save token in localStorage
+      localStorage.setItem("token", data.token);
+
+      // Redirect to home/profile page
+      setTimeout(() => { window.location.href = "profile.html"; }, 1500);
+    }
+  });
+</script>
+</body>
+</html>
