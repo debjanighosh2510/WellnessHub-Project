@@ -4,59 +4,67 @@
   <meta charset="UTF-8" />
   <title>WellnessHub — Profile</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width:500px; margin:40px auto; padding:16px; }
-    #logout { margin-top:20px; padding:10px 16px; }
-    #profileBox { border:1px solid #ccc; padding:16px; border-radius:8px; }
-    #message { margin-top:12px; color:#b33; white-space:pre-wrap; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 16px;
+    }
+    nav {
+      background: #333;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: white;
+      margin-right: 15px;
+      text-decoration: none;
+    }
+    #profileBox {
+      border: 1px solid #ccc;
+      padding: 16px;
+    }
+    #logout {
+      margin-top: 20px;
+      padding: 10px 16px;
+    }
   </style>
 </head>
 <body>
-  <h2>Welcome to WellnessHub</h2>
 
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="home.html">Home</a>
+    <a href="profile.html">Profile</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </nav>
+
+  <!-- Profile Box -->
   <div id="profileBox">
-    <p><b>Name:</b> <span id="name"></span></p>
-    <p><b>Email:</b> <span id="email"></span></p>
-    <p><b>Address:</b> <span id="address"></span></p>
+    <h2>User Profile</h2>
+    <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
+    <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
   </div>
 
-  <p id="message"></p>
-
-  <button id="logout">Logout</button>
+  <button id="logout" onclick="logout()">Logout</button>
 
   <script>
-    // Load token from localStorage
-    const token = localStorage.getItem("token");
+    // Fetch user data from localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    if (!token) {
-      // No token, redirect back to login
-      window.location.href = "login.html";
+    if (user) {
+      document.getElementById('userName').textContent = user.name;
+      document.getElementById('userEmail').textContent = user.email;
     } else {
-      // Fetch profile from backend
-      fetch("http://localhost:5000/api/profile", {
-        headers: { "Authorization": "Bearer " + token }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          document.getElementById("message").innerText = data.error;
-          return;
-        }
-        document.getElementById("name").innerText = data.user.name;
-        document.getElementById("email").innerText = data.user.email;
-        document.getElementById("address").innerText = data.user.address;
-      })
-      .catch(err => {
-        document.getElementById("message").innerText = "Network error: " + err.message;
-      });
+      // Redirect to login if no user is logged in
+      window.location.href = "login.html";
     }
 
-    // Logout button clears token and goes back to login page
-    document.getElementById("logout").addEventListener("click", () => {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+    function logout() {
+      localStorage.removeItem('user');
       window.location.href = "login.html";
-    });
-    <button id="logoutBtn">Logout</button>
-</script>
+    }
+  </script>
+
 </body>
 </html>
