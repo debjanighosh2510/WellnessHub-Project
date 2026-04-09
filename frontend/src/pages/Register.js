@@ -9,6 +9,7 @@ export default function Register() {
   const [address, setAddress] = useState('');
   const [coords, setCoords] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if ('geolocation' in navigator) {
@@ -20,42 +21,120 @@ export default function Register() {
     }
   }, []);
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@(gmail\.com|yahoo\.com)$/i;
+    return emailRegex.test(email);
+  };
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
+    setLoading(true);
+    
     if (!name || !email || !password) {
       setError('Name, email and password are required');
+      setLoading(false);
       return;
     }
+
+    if (!validateEmail(email)) {
+      setError('Please use a valid Gmail or Yahoo email address');
+      setLoading(false);
+      return;
+    }
+    
     try {
       await register({ name, email, password, address, coords });
       window.location.hash = '/dashboard';
     } catch (err) {
-      setError(err?.message || 'Registration failed');
+      setError(err?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <section>
-      <h2>Create Account</h2>
-      <form className="form" onSubmit={handleSubmit}>
-        <label>Name
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
-        </label>
-        <label>Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-        </label>
-        <label>Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a password" />
-        </label>
-        <label>Address
-          <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Street, City" />
-        </label>
-        <div className="muted">GPS: {coords ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}` : 'Not available'}</div>
-        {error && <div className="error">{error}</div>}
-        <button className="btn primary" type="submit">Register</button>
-      </form>
-      <p>Already have an account? <a href="#/login">Sign in</a></p>
+      <div className="auth-container">
+        <h2>Create Account</h2>
+        <p className="auth-subtitle">Join WellnessHub to access health services</p>
+        
+        <form className="form" onSubmit={handleSubmit}>
+          <label>
+            Full Name
+            <input 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+              placeholder="Enter your full name"
+              disabled={loading}
+              required
+            />
+          </label>
+          
+          <label>
+            Email Address (Gmail or Yahoo only)
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              placeholder="Enter your Gmail or Yahoo email"
+              disabled={loading}
+              required
+            />
+            <small className="email-hint">Only @gmail.com and @yahoo.com addresses are allowed</small>
+          </label>
+          
+          <label>
+            Password
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              placeholder="Create a secure password"
+              disabled={loading}
+              required
+            />
+          </label>
+          
+          <label>
+            Address (Optional)
+            <input 
+              value={address} 
+              onChange={(e) => setAddress(e.target.value)} 
+              placeholder="Street, City, State"
+              disabled={loading}
+            />
+          </label>
+          
+          <div className="location-info">
+            <span className="tag">📍 Location</span>
+            <div className="muted">
+              {coords ? `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}` : 'GPS location not available'}
+            </div>
+          </div>
+          
+          {error && <div className="error">{error}</div>}
+          
+          <button 
+            className="btn primary" 
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <div className="spinner"></div>
+                Creating Account...
+              </>
+            ) : (
+              'Create Account'
+            )}
+          </button>
+        </form>
+        
+        <div className="auth-footer">
+          <p>Already have an account? <a href="#/login" className="link">Sign in here</a></p>
+        </div>
+      </div>
     </section>
   );
 }

@@ -6,10 +6,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Locator from './pages/Locator';
-import Report from './pages/Report';
 import Education from './pages/Education';
 import Telemedicine from './pages/Telemedicine';
-import Campaigns from './pages/Campaigns';
+import MentalHealth from './pages/MentalHealth';
 import Feedback from './pages/Feedback';
 import Profile from './pages/Profile';
 import { useAuth } from './hooks/useAuth';
@@ -36,14 +35,12 @@ function App() {
         return isAuthed ? <Dashboard /> : <Login redirectTo="/dashboard" />;
       case '/locator':
         return isAuthed ? <Locator /> : <Login redirectTo="/locator" />;
-      case '/report':
-        return isAuthed ? <Report /> : <Login redirectTo="/report" />;
       case '/education':
         return <Education />;
       case '/telemedicine':
         return isAuthed ? <Telemedicine /> : <Login redirectTo="/telemedicine" />;
-      case '/campaigns':
-        return isAuthed ? <Campaigns /> : <Login redirectTo="/campaigns" />;
+      case '/mental-health':
+        return <MentalHealth />;
       case '/feedback':
         return <Feedback />;
       case '/profile':

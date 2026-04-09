@@ -261,6 +261,50 @@ app.get("/api/nearest-camps", authMiddleware, async (req, res) => {
   }
 });
 
+// ---------------- SOS Emergency Report (No Auth Required) ----------------
+app.post("/api/sos", async (req, res) => {
+  try {
+    const { name, phone, location, emergency, description } = req.body;
+    
+    // Validate required fields
+    if (!name || !phone || !location || !emergency) {
+      return res.status(400).json({ 
+        error: "Name, phone, location, and emergency type are required" 
+      });
+    }
+
+    // In a real application, you would:
+    // 1. Save to database
+    // 2. Send notifications to healthcare workers
+    // 3. Integrate with emergency services
+    // 4. Send SMS/email alerts
+    
+    console.log("🚨 EMERGENCY SOS REPORT RECEIVED:", {
+      name,
+      phone,
+      location,
+      emergency,
+      description,
+      timestamp: new Date().toISOString()
+    });
+
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    res.status(200).json({
+      success: true,
+      message: "Emergency report submitted successfully",
+      emergencyId: `SOS-${Date.now()}`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error in /api/sos:", error.message);
+    res.status(500).json({ 
+      error: "Failed to submit emergency report. Please try again or call 108 immediately." 
+    });
+  }
+});
+
 // ---------------- Start Server ----------------
 app.listen(5000, () => {
   console.log(" Server running on http://localhost:5000");
