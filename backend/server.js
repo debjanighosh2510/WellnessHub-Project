@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
@@ -5,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const axios = require("axios");
 const User = require("./models/User");
+
+const JWT_SECRET = process.env.JWT_SECRET || "mysecretkey";
 
 // ---------------- JWT Middleware ----------------
 function authMiddleware(req, res, next) {
@@ -15,7 +18,7 @@ function authMiddleware(req, res, next) {
     return res.status(401).json({ error: "Access denied. No token provided." });
   }
 
-  jwt.verify(token, "mysecretkey", (err, decoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ error: "Invalid or expired token" });
     }
@@ -30,8 +33,7 @@ app.use(express.json());
 app.use(cors());
 
 // ---------------- MongoDB Connection ----------------
-const mongoURI =
-  "mongodb+srv://admin:282501@cluster0.11huinz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose
   .connect(mongoURI)
@@ -58,7 +60,7 @@ app.post("/api/signup", async (req, res) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, "mysecretkey", {
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -91,7 +93,7 @@ app.post("/api/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ userId: user._id }, "mysecretkey", {
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
 
@@ -122,7 +124,7 @@ app.get("/api/home", authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.userId).select("address name");
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const apiKey = "e9525dd615324c22b95ac4a037e1e83f"; // 🔑 your OpenCage key
+    const apiKey = process.env.OPENCAGE_API_KEY;
     const geoURL = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
       user.address
     )}&key=${apiKey}&limit=1`;
@@ -223,7 +225,7 @@ app.get("/api/nearest-camps", authMiddleware, async (req, res) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     // Get geocoded location of user
-    const apiKey = "e9525dd615324c22b95ac4a037e1e83f";
+    const apiKey = process.env.OPENCAGE_API_KEY;
     const geoURL = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
       user.address
     )}&key=${apiKey}&limit=1`;
