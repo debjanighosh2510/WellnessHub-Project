@@ -30,7 +30,13 @@ function authMiddleware(req, res, next) {
 // ---------------- Express App ----------------
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL || '',
+  ].filter(Boolean),
+  credentials: true,
+}));
 
 // ---------------- MongoDB Connection ----------------
 const mongoURI = process.env.MONGODB_URI;

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import API_BASE from '../config';
 
 const CURRENT_USER_KEY = 'hh308_current_user_v1';
 
@@ -32,7 +33,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (email, password) => {
-    const res = await fetch('/api/login', {
+    const res = await fetch(`${API_BASE}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -47,7 +48,7 @@ export function AuthProvider({ children }) {
   }, [persistUser]);
 
   const register = useCallback(async (payload) => {
-    const res = await fetch('/api/signup', {
+    const res = await fetch(`${API_BASE}/api/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import API_BASE from '../config';
 
 export default function Profile() {
   const { currentUser } = useAuth();
@@ -13,7 +14,7 @@ export default function Profile() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('/api/profile', {
+        const res = await fetch(`${API_BASE}/api/profile`, {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
         const data = await res.json();

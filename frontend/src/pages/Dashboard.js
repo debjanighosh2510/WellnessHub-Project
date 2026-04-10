@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import API_BASE from '../config';
 
 function Stat({ label, value, icon }) {
   return (
@@ -42,7 +43,7 @@ export default function Dashboard() {
       setHomeLoading(true);
       setHomeError('');
       try {
-        const res = await fetch('/api/home', {
+        const res = await fetch(`${API_BASE}/api/home`, {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
         const data = await res.json();

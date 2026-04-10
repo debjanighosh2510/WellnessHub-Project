@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import API_BASE from '../config';
 
 function distanceKm(a, b) {
   if (!a || !b) return Infinity;
@@ -37,7 +38,7 @@ export default function Locator() {
     async function fetchNearest() {
       if (!currentUser?.token) return;
       try {
-        const res = await fetch('/api/nearest-camps', {
+        const res = await fetch(`${API_BASE}/api/nearest-camps`, {
           headers: { Authorization: `Bearer ${currentUser.token}` },
         });
         const data = await res.json();
