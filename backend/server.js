@@ -50,8 +50,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Handle preflight for all routes
-app.options('*', cors());
+// Handle preflight for all routes (Express v5 requires regex, not '*')
+app.options(/.*/, cors());
 
 // ---------------- MongoDB Connection ----------------
 const mongoURI = process.env.MONGODB_URI;
