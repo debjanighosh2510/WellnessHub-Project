@@ -56,10 +56,19 @@ app.options(/.*/, cors());
 // ---------------- MongoDB Connection ----------------
 const mongoURI = process.env.MONGODB_URI;
 
+if (!mongoURI) {
+  console.error("❌ MONGODB_URI is not set in environment variables!");
+} else {
+  console.log("✅ MONGODB_URI found, connecting...");
+}
+
 mongoose
-  .connect(mongoURI)
-  .then(() => console.log(" MongoDB Connected to Atlas"))
-  .catch((err) => console.error(" MongoDB connection error:", err));
+  .connect(mongoURI, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+  })
+  .then(() => console.log("✅ MongoDB Connected to Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err.message));
 
 // ---------------- Signup ----------------
 app.post("/api/signup", async (req, res) => {
